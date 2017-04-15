@@ -25,33 +25,12 @@ import static anupreksha.com.letschat.R.id.fab;
 public class MainActivity extends AppCompatActivity  {
    private FirebaseListAdapter<ChatMessage> adapter;
     private static final int SIGN_IN_REQUEST_CODE=100;
+    boolean flag=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FloatingActionButton fab1 =
-                (FloatingActionButton)findViewById(fab);
 
-        fab1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EditText input = (EditText)findViewById(R.id.input);
-
-                // Read the input field and push a new instance
-                // of ChatMessage to the Firebase database
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .push()
-                        .setValue(new ChatMessage(input.getText().toString(),
-                                FirebaseAuth.getInstance()
-                                        .getCurrentUser()
-                                        .getDisplayName())
-                        );
-
-                // Clear the input
-                input.setText("");
-            }
-        });
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             // Start sign in/sign up activity
             startActivityForResult(
@@ -73,6 +52,37 @@ public class MainActivity extends AppCompatActivity  {
             // Load chat room contents
             displayChatMessages();
         }
+        FloatingActionButton fab1 =
+                (FloatingActionButton)findViewById(fab);
+
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               try{ EditText input = (EditText)findViewById(R.id.input);
+
+                // Read the input field and push a new instance
+                // of ChatMessage to the Firebase database
+                FirebaseDatabase.getInstance()
+                        .getReference()
+                        .push()
+                        .setValue(new ChatMessage(input.getText().toString(),
+                                FirebaseAuth.getInstance()
+                                        .getCurrentUser()
+                                        .getDisplayName())
+                        );
+
+                // Clear the input
+                input.setText("");}
+               catch(Exception e){
+                   flag=false;
+
+               }
+               if(flag==false){
+                   Toast.makeText(MainActivity.this, "We couldn't sign you in. Please check your connection.", Toast.LENGTH_LONG)
+                           .show();
+               }
+            }
+        });
     }
 
     private void displayChatMessages() {
